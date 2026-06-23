@@ -1,0 +1,69 @@
+{
+  "endpoints": {
+    "kling-ai-avatar-pro/ai_avatar": {
+      "unit_price_cents": 16
+    },
+    "kling-ai-avatar-standard/ai_avatar": {
+      "unit_price_cents": 8
+    },
+    "kling-ai-avatar-v1-pro/ai_avatar": {
+      "unit_price_cents": 16
+    },
+    "kling-v1-avatar-standard/ai_avatar": {
+      "unit_price_cents": 8
+    },
+    "kling-v2.1-master-image-to-video/image_to_video": {
+      "unit_price_cents": 32
+    },
+    "kling-v2.1-pro/image_to_video": {
+      "unit_price_cents": 10
+    },
+    "kling-v2.1-standard/image_to_video": {
+      "unit_price_cents": 5
+    },
+    "kling-v2.5-turbo-image-to-video-pro/image_to_video": {
+      "unit_price_cents": 9
+    },
+    "kling-3.0/motion_control": {
+      "unit_price_cents": 20,
+      "billing_config": {
+        "key": "resolution",
+        "overrides": {
+          "720p": 20,
+          "1080p": 27
+        },
+        "duration_source": {
+          "kind": "response_body",
+          "path": "videos[0].url"
+        }
+      }
+    },
+    "kling-3.0/text_to_video": {
+      "unit_price_cents": 67,
+      "billing_config": {
+        "keys": [
+          "enable_sound",
+          "output_resolution"
+        ],
+        "matrix": {
+          "false": {
+            "720p": 14,
+            "1080p": 18,
+            "4k": 67
+          },
+          "true": {
+            "720p": 20,
+            "1080p": 27,
+            "4k": 67
+          }
+        }
+      }
+    },
+    "kling-v2.1-master-text-to-video/text_to_video": {
+      "unit_price_cents": 32
+    },
+    "kling-v2.5-turbo-text-to-video-pro/text_to_video": {
+      "unit_price_cents": 9
+    }
+  }
+}
