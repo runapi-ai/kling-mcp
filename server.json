@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.runapi-builder/kling-mcp",
-  "description": "RunAPI MCP server for the Kling model line — create tasks, poll status, and check pricing with one API key.",
+  "description": "RunAPI MCP server for Kling: create tasks, poll status, and check pricing.",
   "repository": {
     "url": "https://github.com/runapi-ai/kling-mcp",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@runapi.ai/kling-mcp",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "transport": {
         "type": "stdio"
       },

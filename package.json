@@ -1,6 +1,6 @@
 {
   "name": "@runapi.ai/kling-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "RunAPI MCP server for one model line: create tasks, poll status, and check pricing with one API key.",
   "type": "module",
   "main": "dist/src/index.js",
