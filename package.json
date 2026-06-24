@@ -1,7 +1,7 @@
 {
   "name": "@runapi.ai/kling-mcp",
-  "version": "0.1.2",
-  "description": "RunAPI MCP server for one model line: create tasks, poll status, and check pricing with one API key.",
+  "version": "0.1.3",
+  "description": "Kling MCP server for RunAPI — create Kling AI tasks (ai avatar, image to video, motion control), poll status, and check pricing across 11 models with one API key.",
   "type": "module",
   "main": "dist/src/index.js",
   "bin": {
@@ -27,7 +27,17 @@
     "runapi",
     "mcp",
     "model-context-protocol",
-    "ai"
+    "ai",
+    "kling",
+    "kling-mcp",
+    "kling-ai",
+    "kling-api",
+    "video-generation",
+    "ai-video",
+    "ai-avatar",
+    "image-to-video",
+    "motion-control",
+    "text-to-video"
   ],
   "author": "RunAPI",
   "license": "Apache-2.0",
@@ -44,7 +54,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@runapi.ai/mcp-core": "0.1.1",
+    "@runapi.ai/mcp-core": "0.1.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
