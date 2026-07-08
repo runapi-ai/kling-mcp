@@ -45,7 +45,7 @@ describe("kling stdio MCP server", () => {
 
     const tools = await client.listTools();
     const names = tools.tools.map((tool) => tool.name).sort();
-    expect(names).toEqual(["ai_avatar","check_pricing","get_task","image_to_video","motion_control","text_to_video"]);
+    expect(names).toEqual(["ai_avatar","check_pricing","get_task","image_to_video","login","motion_control","text_to_video"]);
 
     const pricing = await client.callTool({ name: "check_pricing", arguments: {} });
     const content = pricing.content?.[0];
