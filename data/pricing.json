@@ -24,6 +24,16 @@
     "kling-v2.5-turbo-image-to-video-pro/image_to_video": {
       "unit_price_cents": 9
     },
+    "kling-v3-turbo-image-to-video/image_to_video": {
+      "unit_price_cents": 18,
+      "billing_config": {
+        "key": "output_resolution",
+        "overrides": {
+          "720p": 18,
+          "1080p": 22.5
+        }
+      }
+    },
     "kling-3.0/motion_control": {
       "unit_price_cents": 20,
       "billing_config": {
@@ -64,6 +74,16 @@
     },
     "kling-v2.5-turbo-text-to-video-pro/text_to_video": {
       "unit_price_cents": 9
+    },
+    "kling-v3-turbo-text-to-video/text_to_video": {
+      "unit_price_cents": 18,
+      "billing_config": {
+        "key": "output_resolution",
+        "overrides": {
+          "720p": 18,
+          "1080p": 22.5
+        }
+      }
     }
   }
 }

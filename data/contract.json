@@ -8,9 +8,11 @@
     "kling-v2.1-pro",
     "kling-v2.1-standard",
     "kling-v2.5-turbo-image-to-video-pro",
+    "kling-v3-turbo-image-to-video",
     "kling-3.0",
     "kling-v2.1-master-text-to-video",
-    "kling-v2.5-turbo-text-to-video-pro"
+    "kling-v2.5-turbo-text-to-video-pro",
+    "kling-v3-turbo-text-to-video"
   ],
   "actions": {
     "kling/avatar": {
@@ -29,6 +31,16 @@
             "required": true,
             "description": "Model slug."
           },
+          "source_image_url": {
+            "type": "string",
+            "required": true,
+            "description": "Face image URL."
+          },
+          "source_audio_url": {
+            "type": "string",
+            "required": true,
+            "description": "Audio URL for lip sync."
+          },
           "prompt": {
             "type": "string",
             "required": true,
@@ -37,16 +49,6 @@
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
-          },
-          "source_audio_url": {
-            "type": "string",
-            "required": true,
-            "description": "Audio URL for lip sync."
-          },
-          "source_image_url": {
-            "type": "string",
-            "required": true,
-            "description": "Face image URL."
           }
         },
         "kling-ai-avatar-standard": {
@@ -55,6 +57,16 @@
             "required": true,
             "description": "Model slug."
           },
+          "source_image_url": {
+            "type": "string",
+            "required": true,
+            "description": "Face image URL."
+          },
+          "source_audio_url": {
+            "type": "string",
+            "required": true,
+            "description": "Audio URL for lip sync."
+          },
           "prompt": {
             "type": "string",
             "required": true,
@@ -63,16 +75,6 @@
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
-          },
-          "source_audio_url": {
-            "type": "string",
-            "required": true,
-            "description": "Audio URL for lip sync."
-          },
-          "source_image_url": {
-            "type": "string",
-            "required": true,
-            "description": "Face image URL."
           }
         },
         "kling-ai-avatar-v1-pro": {
@@ -81,6 +83,16 @@
             "required": true,
             "description": "Model slug."
           },
+          "source_image_url": {
+            "type": "string",
+            "required": true,
+            "description": "Face image URL."
+          },
+          "source_audio_url": {
+            "type": "string",
+            "required": true,
+            "description": "Audio URL for lip sync."
+          },
           "prompt": {
             "type": "string",
             "required": true,
@@ -89,16 +101,6 @@
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
-          },
-          "source_audio_url": {
-            "type": "string",
-            "required": true,
-            "description": "Audio URL for lip sync."
-          },
-          "source_image_url": {
-            "type": "string",
-            "required": true,
-            "description": "Face image URL."
           }
         },
         "kling-v1-avatar-standard": {
@@ -107,6 +109,16 @@
             "required": true,
             "description": "Model slug."
           },
+          "source_image_url": {
+            "type": "string",
+            "required": true,
+            "description": "Face image URL."
+          },
+          "source_audio_url": {
+            "type": "string",
+            "required": true,
+            "description": "Audio URL for lip sync."
+          },
           "prompt": {
             "type": "string",
             "required": true,
@@ -115,16 +127,6 @@
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
-          },
-          "source_audio_url": {
-            "type": "string",
-            "required": true,
-            "description": "Audio URL for lip sync."
-          },
-          "source_image_url": {
-            "type": "string",
-            "required": true,
-            "description": "Face image URL."
           }
         }
       }
@@ -136,7 +138,53 @@
         "kling-v2.1-master-image-to-video",
         "kling-v2.1-pro",
         "kling-v2.1-standard",
-        "kling-v2.5-turbo-image-to-video-pro"
+        "kling-v2.5-turbo-image-to-video-pro",
+        "kling-v3-turbo-image-to-video"
+      ],
+      "rules": [
+        {
+          "when": {
+            "model": "kling-v2.1-master-image-to-video"
+          },
+          "forbidden": [
+            "output_resolution"
+          ]
+        },
+        {
+          "when": {
+            "model": "kling-v2.1-pro"
+          },
+          "forbidden": [
+            "output_resolution"
+          ]
+        },
+        {
+          "when": {
+            "model": "kling-v2.1-standard"
+          },
+          "forbidden": [
+            "output_resolution"
+          ]
+        },
+        {
+          "when": {
+            "model": "kling-v2.5-turbo-image-to-video-pro"
+          },
+          "forbidden": [
+            "output_resolution"
+          ]
+        },
+        {
+          "when": {
+            "model": "kling-v3-turbo-image-to-video"
+          },
+          "forbidden": [
+            "aspect_ratio",
+            "negative_prompt",
+            "cfg_scale",
+            "last_frame_image_url"
+          ]
+        }
       ],
       "fields_by_model": {
         "kling-v2.1-master-image-to-video": {
@@ -150,38 +198,41 @@
             "required": true,
             "description": "Video description."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "aspect_ratio": {
+          "first_frame_image_url": {
             "type": "string",
-            "description": "Output aspect ratio."
+            "required": true,
+            "description": "First frame image URL."
           },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               5,
               10
             ],
-            "type": "integer",
             "description": "Duration in seconds."
+          },
+          "output_resolution": {
+            "type": "string"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
           },
           "last_frame_image_url": {
             "type": "string",
             "description": "Final frame image URL for supported image-to-video models."
           },
-          "first_frame_image_url": {
+          "aspect_ratio": {
             "type": "string",
-            "required": true,
-            "description": "First frame image URL."
+            "description": "Output aspect ratio."
           }
         },
         "kling-v2.1-pro": {
@@ -195,38 +246,41 @@
             "required": true,
             "description": "Video description."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "aspect_ratio": {
+          "first_frame_image_url": {
             "type": "string",
-            "description": "Output aspect ratio."
+            "required": true,
+            "description": "First frame image URL."
           },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               5,
               10
             ],
-            "type": "integer",
             "description": "Duration in seconds."
+          },
+          "output_resolution": {
+            "type": "string"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
           },
           "last_frame_image_url": {
             "type": "string",
             "description": "Final frame image URL for supported image-to-video models."
           },
-          "first_frame_image_url": {
+          "aspect_ratio": {
             "type": "string",
-            "required": true,
-            "description": "First frame image URL."
+            "description": "Output aspect ratio."
           }
         },
         "kling-v2.1-standard": {
@@ -240,38 +294,41 @@
             "required": true,
             "description": "Video description."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "aspect_ratio": {
+          "first_frame_image_url": {
             "type": "string",
-            "description": "Output aspect ratio."
+            "required": true,
+            "description": "First frame image URL."
           },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               5,
               10
             ],
-            "type": "integer",
             "description": "Duration in seconds."
+          },
+          "output_resolution": {
+            "type": "string"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
           },
           "last_frame_image_url": {
             "type": "string",
             "description": "Final frame image URL for supported image-to-video models."
           },
-          "first_frame_image_url": {
+          "aspect_ratio": {
             "type": "string",
-            "required": true,
-            "description": "First frame image URL."
+            "description": "Output aspect ratio."
           }
         },
         "kling-v2.5-turbo-image-to-video-pro": {
@@ -285,38 +342,103 @@
             "required": true,
             "description": "Video description."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "aspect_ratio": {
+          "first_frame_image_url": {
             "type": "string",
-            "description": "Output aspect ratio."
+            "required": true,
+            "description": "First frame image URL."
           },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               5,
               10
             ],
-            "type": "integer",
             "description": "Duration in seconds."
+          },
+          "output_resolution": {
+            "type": "string"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
           },
           "last_frame_image_url": {
             "type": "string",
             "description": "Final frame image URL for supported image-to-video models."
           },
+          "aspect_ratio": {
+            "type": "string",
+            "description": "Output aspect ratio."
+          }
+        },
+        "kling-v3-turbo-image-to-video": {
+          "model": {
+            "type": "string",
+            "required": true,
+            "description": "Model slug."
+          },
+          "prompt": {
+            "type": "string",
+            "max": 2500,
+            "min": 1,
+            "length": true,
+            "required": true,
+            "description": "Video description."
+          },
           "first_frame_image_url": {
             "type": "string",
             "required": true,
             "description": "First frame image URL."
+          },
+          "callback_url": {
+            "type": "string",
+            "description": "Webhook URL for async notifications."
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "enum": [
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "default": 5,
+            "description": "Duration in seconds."
+          },
+          "output_resolution": {
+            "type": "string",
+            "enum": [
+              "720p",
+              "1080p"
+            ],
+            "default": "720p",
+            "description": "Output resolution."
+          },
+          "negative_prompt": {
+            "type": "string"
+          },
+          "cfg_scale": {
+            "type": "number"
+          },
+          "last_frame_image_url": {
+            "type": "string"
           }
         }
       }
@@ -334,47 +456,47 @@
             "required": true,
             "description": "Model slug."
           },
-          "prompt": {
-            "type": "string",
-            "description": "Description prompt."
-          },
-          "callback_url": {
-            "type": "string",
-            "description": "Webhook URL for async notifications."
-          },
           "source_image_url": {
             "type": "string",
             "required": true,
             "description": "Subject image URL."
-          },
-          "background_source": {
-            "enum": [
-              "video",
-              "image"
-            ],
-            "type": "string",
-            "description": "Background source."
-          },
-          "output_resolution": {
-            "enum": [
-              "720p",
-              "1080p"
-            ],
-            "type": "string",
-            "description": "Output resolution."
           },
           "reference_video_url": {
             "type": "string",
             "required": true,
             "description": "Reference motion video URL."
           },
+          "prompt": {
+            "type": "string",
+            "description": "Description prompt."
+          },
+          "output_resolution": {
+            "type": "string",
+            "enum": [
+              "720p",
+              "1080p"
+            ],
+            "description": "Output resolution."
+          },
           "character_orientation": {
+            "type": "string",
             "enum": [
               "video",
               "image"
             ],
-            "type": "string",
             "description": "Character orientation."
+          },
+          "background_source": {
+            "type": "string",
+            "enum": [
+              "video",
+              "image"
+            ],
+            "description": "Background source."
+          },
+          "callback_url": {
+            "type": "string",
+            "description": "Webhook URL for async notifications."
           }
         }
       }
@@ -385,7 +507,25 @@
       "models": [
         "kling-3.0",
         "kling-v2.1-master-text-to-video",
-        "kling-v2.5-turbo-text-to-video-pro"
+        "kling-v2.5-turbo-text-to-video-pro",
+        "kling-v3-turbo-text-to-video"
+      ],
+      "rules": [
+        {
+          "when": {
+            "model": "kling-v3-turbo-text-to-video"
+          },
+          "forbidden": [
+            "enable_sound",
+            "negative_prompt",
+            "cfg_scale",
+            "multi_shots",
+            "multi_prompt",
+            "first_frame_image_url",
+            "last_frame_image_url",
+            "kling_elements"
+          ]
+        }
       ],
       "fields_by_model": {
         "kling-3.0": {
@@ -398,23 +538,6 @@
             "type": "string",
             "description": "Video description. Required unless multi_shots is enabled."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "multi_shots": {
-            "type": "boolean",
-            "description": "Enable multi-shot generation."
-          },
-          "aspect_ratio": {
-            "enum": [
-              "16:9",
-              "9:16",
-              "1:1"
-            ],
-            "type": "string",
-            "description": "Output aspect ratio."
-          },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
@@ -423,19 +546,8 @@
             "type": "boolean",
             "description": "Enable sound generation."
           },
-          "multi_prompt": {
-            "type": "array",
-            "description": "Prompt segments for multi-shot mode."
-          },
-          "kling_elements": {
-            "type": "array",
-            "description": "Element references for generation."
-          },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               3,
               4,
@@ -451,25 +563,53 @@
               14,
               15
             ],
-            "type": "integer",
             "description": "Duration in seconds."
           },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "description": "Output aspect ratio."
+          },
           "output_resolution": {
+            "type": "string",
             "enum": [
               "720p",
               "1080p",
               "4k"
             ],
-            "type": "string",
             "description": "Output resolution."
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
+          },
+          "multi_shots": {
+            "type": "boolean",
+            "description": "Enable multi-shot generation."
+          },
+          "multi_prompt": {
+            "type": "array",
+            "description": "Prompt segments for multi-shot mode."
+          },
+          "first_frame_image_url": {
+            "type": "string",
+            "description": "First frame image URL."
           },
           "last_frame_image_url": {
             "type": "string",
             "description": "Last frame image URL for single-shot mode."
           },
-          "first_frame_image_url": {
-            "type": "string",
-            "description": "First frame image URL."
+          "kling_elements": {
+            "type": "array",
+            "description": "Element references for generation."
           }
         },
         "kling-v2.1-master-text-to-video": {
@@ -482,19 +622,6 @@
             "type": "string",
             "description": "Video description."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "aspect_ratio": {
-            "enum": [
-              "16:9",
-              "9:16",
-              "1:1"
-            ],
-            "type": "string",
-            "description": "Output aspect ratio."
-          },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
@@ -503,17 +630,48 @@
             "type": "boolean",
             "description": "Enable sound generation."
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               5,
               10
             ],
-            "type": "integer",
             "description": "Duration in seconds."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "description": "Output aspect ratio."
+          },
+          "output_resolution": {
+            "type": "string"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
+          },
+          "multi_shots": {
+            "type": "boolean"
+          },
+          "multi_prompt": {
+            "type": "array"
+          },
+          "first_frame_image_url": {
+            "type": "string"
+          },
+          "last_frame_image_url": {
+            "type": "string"
+          },
+          "kling_elements": {
+            "type": "array"
           }
         },
         "kling-v2.5-turbo-text-to-video-pro": {
@@ -526,19 +684,6 @@
             "type": "string",
             "description": "Video description."
           },
-          "cfg_scale": {
-            "type": "number",
-            "description": "Guidance scale (0-1)."
-          },
-          "aspect_ratio": {
-            "enum": [
-              "16:9",
-              "9:16",
-              "1:1"
-            ],
-            "type": "string",
-            "description": "Output aspect ratio."
-          },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
@@ -547,17 +692,130 @@
             "type": "boolean",
             "description": "Enable sound generation."
           },
-          "negative_prompt": {
-            "type": "string",
-            "description": "Negative prompt."
-          },
           "duration_seconds": {
+            "type": "integer",
             "enum": [
               5,
               10
             ],
-            "type": "integer",
             "description": "Duration in seconds."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "description": "Output aspect ratio."
+          },
+          "output_resolution": {
+            "type": "string"
+          },
+          "negative_prompt": {
+            "type": "string",
+            "description": "Negative prompt."
+          },
+          "cfg_scale": {
+            "type": "number",
+            "description": "Guidance scale (0-1)."
+          },
+          "multi_shots": {
+            "type": "boolean"
+          },
+          "multi_prompt": {
+            "type": "array"
+          },
+          "first_frame_image_url": {
+            "type": "string"
+          },
+          "last_frame_image_url": {
+            "type": "string"
+          },
+          "kling_elements": {
+            "type": "array"
+          }
+        },
+        "kling-v3-turbo-text-to-video": {
+          "model": {
+            "type": "string",
+            "required": true,
+            "description": "Model slug."
+          },
+          "prompt": {
+            "type": "string",
+            "max": 2500,
+            "min": 1,
+            "length": true,
+            "required": true,
+            "description": "Video description."
+          },
+          "callback_url": {
+            "type": "string",
+            "description": "Webhook URL for async notifications."
+          },
+          "enable_sound": {
+            "type": "boolean"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "enum": [
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "default": 5,
+            "description": "Duration in seconds."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "default": "16:9",
+            "description": "Output aspect ratio."
+          },
+          "output_resolution": {
+            "type": "string",
+            "enum": [
+              "720p",
+              "1080p"
+            ],
+            "default": "720p",
+            "description": "Output resolution."
+          },
+          "negative_prompt": {
+            "type": "string"
+          },
+          "cfg_scale": {
+            "type": "number"
+          },
+          "multi_shots": {
+            "type": "boolean"
+          },
+          "multi_prompt": {
+            "type": "array"
+          },
+          "first_frame_image_url": {
+            "type": "string"
+          },
+          "last_frame_image_url": {
+            "type": "string"
+          },
+          "kling_elements": {
+            "type": "array"
           }
         }
       }

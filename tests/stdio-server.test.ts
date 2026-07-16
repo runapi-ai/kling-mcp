@@ -56,13 +56,36 @@ describe("kling stdio MCP server", () => {
 
     // Every advertised model must price without naming an endpoint, even one
     // that only lives on a non-primary endpoint of a multi-endpoint line.
-    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.5-turbo-image-to-video-pro","kling-3.0","kling-v2.1-master-text-to-video","kling-v2.5-turbo-text-to-video-pro"]) {
+    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.5-turbo-image-to-video-pro","kling-v3-turbo-image-to-video","kling-3.0","kling-v2.1-master-text-to-video","kling-v2.5-turbo-text-to-video-pro","kling-v3-turbo-text-to-video"]) {
       const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
       const pricedContent = priced.content?.[0];
       if (!pricedContent || pricedContent.type !== "text") {
         throw new Error("Expected text tool response");
       }
       expect(JSON.parse(pricedContent.text), `check_pricing should support ${model}`).toMatchObject({ supported: true });
+    }
+
+    for (const model of ["kling-v3-turbo-image-to-video","kling-v3-turbo-text-to-video"]) {
+      const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
+      const pricedContent = priced.content?.[0];
+      if (!pricedContent || pricedContent.type !== "text") {
+        throw new Error("Expected text tool response");
+      }
+      expect(JSON.parse(pricedContent.text), `check_pricing should embed pricing for ${model}`).toMatchObject({
+        price: {
+          pricing_source: "build-time pricing snapshot",
+          pricing: {
+            unit_price_cents: 18,
+            billing_config: {
+              key: "output_resolution",
+              overrides: {
+                "720p": 18,
+                "1080p": 22.5
+              }
+            }
+          }
+        }
+      });
     }
 
     // A model offered on several endpoints must report every endpoint's price
