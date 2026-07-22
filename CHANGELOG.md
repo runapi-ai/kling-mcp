@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.1.10](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.10) - 2026-07-22
+
+### Added
+- Expose Kling 2.6 text-to-video and image-to-video models with contract-driven request validation and pricing lookup.
+
+### Changed
+- Refresh the generated server for current contract-driven endpoint handling.
+
+
 ## [v0.1.9](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.9) - 2026-07-16
 
 ### Changed

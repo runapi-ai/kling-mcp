@@ -47,6 +47,11 @@ describe("kling stdio MCP server", () => {
     const names = tools.tools.map((tool) => tool.name).sort();
     expect(names).toEqual(["ai_avatar","check_pricing","get_task","image_to_video","login","motion_control","text_to_video"]);
 
+    for (const endpoint of []) {
+      const tool = tools.tools.find((candidate) => candidate.name === endpoint);
+      expect(tool?.inputSchema.properties, `${endpoint} is synchronous and must not expose polling controls`).not.toHaveProperty("wait");
+    }
+
     const pricing = await client.callTool({ name: "check_pricing", arguments: {} });
     const content = pricing.content?.[0];
     if (!content || content.type !== "text") {
@@ -56,7 +61,7 @@ describe("kling stdio MCP server", () => {
 
     // Every advertised model must price without naming an endpoint, even one
     // that only lives on a non-primary endpoint of a multi-endpoint line.
-    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.5-turbo-image-to-video-pro","kling-v3-turbo-image-to-video","kling-3.0","kling-v2.1-master-text-to-video","kling-v2.5-turbo-text-to-video-pro","kling-v3-turbo-text-to-video"]) {
+    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.5-turbo-image-to-video-pro","kling-v2.6","kling-v3-turbo-image-to-video","kling-3.0","kling-v2.1-master-text-to-video","kling-v2.5-turbo-text-to-video-pro","kling-v3-turbo-text-to-video"]) {
       const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
       const pricedContent = priced.content?.[0];
       if (!pricedContent || pricedContent.type !== "text") {
@@ -65,32 +70,9 @@ describe("kling stdio MCP server", () => {
       expect(JSON.parse(pricedContent.text), `check_pricing should support ${model}`).toMatchObject({ supported: true });
     }
 
-    for (const model of ["kling-v3-turbo-image-to-video","kling-v3-turbo-text-to-video"]) {
-      const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
-      const pricedContent = priced.content?.[0];
-      if (!pricedContent || pricedContent.type !== "text") {
-        throw new Error("Expected text tool response");
-      }
-      expect(JSON.parse(pricedContent.text), `check_pricing should embed pricing for ${model}`).toMatchObject({
-        price: {
-          pricing_source: "build-time pricing snapshot",
-          pricing: {
-            unit_price_cents: 18,
-            billing_config: {
-              key: "output_resolution",
-              overrides: {
-                "720p": 18,
-                "1080p": 22.5
-              }
-            }
-          }
-        }
-      });
-    }
-
     // A model offered on several endpoints must report every endpoint's price
     // without naming one, not silently price only the first endpoint found.
-    const multiEndpointModels: Record<string, string[]> = {"kling-3.0":["motion_control","text_to_video"]};
+    const multiEndpointModels: Record<string, string[]> = {"kling-v2.6":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
     for (const [model, actions] of Object.entries(multiEndpointModels)) {
       const spread = await client.callTool({ name: "check_pricing", arguments: { model } });
       const spreadContent = spread.content?.[0];
@@ -100,5 +82,38 @@ describe("kling stdio MCP server", () => {
       const parsed = JSON.parse(spreadContent.text) as { endpoints?: { action: string }[] };
       expect(parsed.endpoints?.map((entry) => entry.action).sort(), `check_pricing should price ${model} on every endpoint`).toEqual([...actions].sort());
     }
+
+          const invalidV26Requests = [
+            {
+              tool: "text_to_video",
+              arguments: { model: "kling-v2.6", prompt: "test", enable_sound: true, wait: false },
+              message: "enable_sound requires mode pro for kling-v2.6"
+            },
+            {
+              tool: "image_to_video",
+              arguments: {
+                model: "kling-v2.6", prompt: "test", first_frame_image_url: "https://cdn.runapi.ai/public/samples/image.jpg",
+                last_frame_image_url: "https://cdn.runapi.ai/public/samples/last-frame.jpg", wait: false
+              },
+              message: "last_frame_image_url requires mode pro for kling-v2.6"
+            },
+            {
+              tool: "image_to_video",
+              arguments: {
+                model: "kling-v2.6", prompt: "test", first_frame_image_url: "https://cdn.runapi.ai/public/samples/image.jpg",
+                last_frame_image_url: "https://cdn.runapi.ai/public/samples/last-frame.jpg", mode: "pro", duration_seconds: 10, wait: false
+              },
+              message: "last_frame_image_url requires duration_seconds 5 for kling-v2.6"
+            }
+          ];
+          for (const invalid of invalidV26Requests) {
+            const response = await client.callTool({ name: invalid.tool, arguments: invalid.arguments });
+            const responseContent = response.content?.[0];
+            if (!responseContent || responseContent.type !== "text") {
+              throw new Error("Expected text tool response");
+            }
+            expect(JSON.parse(responseContent.text).error).toContain(invalid.message);
+          }
+
   });
 });

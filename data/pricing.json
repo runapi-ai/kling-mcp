@@ -24,6 +24,42 @@
     "kling-v2.5-turbo-image-to-video-pro/image_to_video": {
       "unit_price_cents": 9
     },
+    "kling-v2.6/image_to_video": {
+      "unit_price_cents": 40,
+      "billing_config": {
+        "keys": [
+          "mode",
+          "enable_sound"
+        ],
+        "matrix": {
+          "std": {
+            "false": 12
+          },
+          "pro": {
+            "false": 20,
+            "true": 40
+          }
+        }
+      }
+    },
+    "kling-v2.6/text_to_video": {
+      "unit_price_cents": 40,
+      "billing_config": {
+        "keys": [
+          "mode",
+          "enable_sound"
+        ],
+        "matrix": {
+          "std": {
+            "false": 12
+          },
+          "pro": {
+            "false": 20,
+            "true": 40
+          }
+        }
+      }
+    },
     "kling-v3-turbo-image-to-video/image_to_video": {
       "unit_price_cents": 18,
       "billing_config": {
@@ -37,7 +73,7 @@
     "kling-3.0/motion_control": {
       "unit_price_cents": 20,
       "billing_config": {
-        "key": "resolution",
+        "key": "output_resolution",
         "overrides": {
           "720p": 20,
           "1080p": 27
