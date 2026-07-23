@@ -31,20 +31,29 @@ function taskType(action: ContractAction): "synchronous" | "asynchronous" {
 }
 
 function validateKlingRequest(action: string, params: Record<string, unknown>): string | undefined {
-  if (params.model !== "kling-v2.6") return undefined;
-
-  const mode = params.mode ?? "std";
-  if (params.enable_sound === true && mode !== "pro") {
-    return "enable_sound requires mode pro for kling-v2.6";
+  if (params.model === "kling-v2.6") {
+    const mode = params.mode ?? "std";
+    if (params.enable_sound === true && mode !== "pro") {
+      return "enable_sound requires mode pro for kling-v2.6";
+    }
+    if (action !== "image_to_video" || typeof params.last_frame_image_url !== "string" || params.last_frame_image_url.length === 0) {
+      return undefined;
+    }
+    if (mode !== "pro") {
+      return "last_frame_image_url requires mode pro for kling-v2.6";
+    }
+    if ((params.duration_seconds ?? 5) !== 5) {
+      return "last_frame_image_url requires duration_seconds 5 for kling-v2.6";
+    }
+    return undefined;
   }
+
+  if (params.model !== "kling-v3-omni") return undefined;
   if (action !== "image_to_video" || typeof params.last_frame_image_url !== "string" || params.last_frame_image_url.length === 0) {
     return undefined;
   }
-  if (mode !== "pro") {
-    return "last_frame_image_url requires mode pro for kling-v2.6";
-  }
   if ((params.duration_seconds ?? 5) !== 5) {
-    return "last_frame_image_url requires duration_seconds 5 for kling-v2.6";
+    return "last_frame_image_url requires duration_seconds 5 for kling-v3-omni";
   }
   return undefined;
 }

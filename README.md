@@ -30,7 +30,7 @@
 ## Why This Package?
 
 `@runapi.ai/kling-mcp` is a focused Model Context Protocol server for the **Kling** model line on RunAPI.
-It gives MCP-compatible assistants direct access to 4 endpoints and 14 model variants without loading the full RunAPI catalog.
+It gives MCP-compatible assistants direct access to 5 endpoints and 14 model variants without loading the full RunAPI catalog.
 
 Use this per-model server when an agent should stay scoped to Kling. Use [`@runapi.ai/mcp`](https://github.com/runapi-ai/mcp) when one assistant should discover every RunAPI model line.
 
@@ -75,6 +75,7 @@ Ready-made examples are in [`examples/`](examples/) for Claude, Cursor, Windsurf
 | Tool | Auth | Purpose |
 |---|---|---|
 | `ai_avatar` | Yes | Create a Kling ai avatar task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
+| `extend_video` | Yes | Create a Kling extend video task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
 | `image_to_video` | Yes | Create a Kling image to video task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
 | `motion_control` | Yes | Create a Kling motion control task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
 | `text_to_video` | Yes | Create a Kling text to video task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
@@ -85,14 +86,18 @@ Ready-made examples are in [`examples/`](examples/) for Claude, Cursor, Windsurf
 
 ## Models
 
-Kling covers 14 model variants across 4 endpoints. Each tool accepts the models listed for it:
+Kling covers 14 model variants across 5 endpoints. Each tool accepts the models listed for it:
 
 | Tool | Models |
 |---|---|
 | `ai_avatar` | `kling-ai-avatar-pro`, `kling-ai-avatar-standard`, `kling-ai-avatar-v1-pro`, `kling-v1-avatar-standard` |
+| `extend_video` | `kling-v2.5-turbo-image-to-video-pro`, `kling-v2.5-turbo-text-to-video-pro` |
 | `image_to_video` | `kling-v2.1-master-image-to-video`, `kling-v2.1-pro`, `kling-v2.1-standard`, `kling-v2.5-turbo-image-to-video-pro`, `kling-v2.6`, `kling-v3-turbo-image-to-video` |
 | `motion_control` | `kling-3.0` |
 | `text_to_video` | `kling-3.0`, `kling-v2.1-master-text-to-video`, `kling-v2.5-turbo-text-to-video-pro`, `kling-v2.6`, `kling-v3-turbo-text-to-video` |
+| `image_to_video` | `kling-v2.1-master-image-to-video`, `kling-v2.1-pro`, `kling-v2.1-standard`, `kling-v2.5-turbo-image-to-video-pro`, `kling-v3-omni`, `kling-v3-turbo-image-to-video` |
+| `motion_control` | `kling-3.0` |
+| `text_to_video` | `kling-3.0`, `kling-v2.1-master-text-to-video`, `kling-v2.5-turbo-text-to-video-pro`, `kling-v3-omni`, `kling-v3-turbo-text-to-video` |
 
 Model availability can change between releases. Use `check_pricing` or the [Kling model page](https://runapi.ai/models/kling) for the current catalog view.
 

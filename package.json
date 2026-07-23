@@ -1,6 +1,6 @@
 {
   "name": "@runapi.ai/kling-mcp",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "RunAPI Kling MCP server for video generation: create tasks, poll results, and check pricing across 14 model variants from Claude Code, Codex, Cursor, and VS Code.",
   "type": "module",
   "main": "dist/src/index.js",
@@ -39,6 +39,7 @@
     "video-generation",
     "ai-video",
     "ai-avatar",
+    "extend-video",
     "image-to-video",
     "motion-control",
     "text-to-video"
@@ -58,7 +59,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@runapi.ai/mcp-core": "0.1.8",
+    "@runapi.ai/mcp-core": "0.2.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

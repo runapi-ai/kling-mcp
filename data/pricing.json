@@ -12,6 +12,32 @@
     "kling-v1-avatar-standard/ai_avatar": {
       "unit_price_cents": 8
     },
+    "kling-v2.5-turbo-image-to-video-pro/extend_video": {
+      "unit_price_cents": 9,
+      "billing_config": {
+        "key": "mode",
+        "overrides": {
+          "std": 4.2,
+          "pro": 8.4
+        }
+      }
+    },
+    "kling-v2.5-turbo-image-to-video-pro/image_to_video": {
+      "unit_price_cents": 9
+    },
+    "kling-v2.5-turbo-text-to-video-pro/extend_video": {
+      "unit_price_cents": 9,
+      "billing_config": {
+        "key": "mode",
+        "overrides": {
+          "std": 4.2,
+          "pro": 8.4
+        }
+      }
+    },
+    "kling-v2.5-turbo-text-to-video-pro/text_to_video": {
+      "unit_price_cents": 9
+    },
     "kling-v2.1-master-image-to-video/image_to_video": {
       "unit_price_cents": 32
     },
@@ -20,9 +46,6 @@
     },
     "kling-v2.1-standard/image_to_video": {
       "unit_price_cents": 5
-    },
-    "kling-v2.5-turbo-image-to-video-pro/image_to_video": {
-      "unit_price_cents": 9
     },
     "kling-v2.6/image_to_video": {
       "unit_price_cents": 40,
@@ -107,9 +130,6 @@
     },
     "kling-v2.1-master-text-to-video/text_to_video": {
       "unit_price_cents": 32
-    },
-    "kling-v2.5-turbo-text-to-video-pro/text_to_video": {
-      "unit_price_cents": 9
     },
     "kling-v3-turbo-text-to-video/text_to_video": {
       "unit_price_cents": 18,
