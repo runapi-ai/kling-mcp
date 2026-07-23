@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.1.12](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.12) - 2026-07-23
+
+### Added
+- Expose Kling 2.6 motion control with contract-driven required-field and unsupported-field validation.
+
+
 ## [v0.1.11](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.11) - 2026-07-23
 
 ### Added

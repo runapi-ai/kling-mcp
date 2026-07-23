@@ -65,6 +65,14 @@
         }
       }
     },
+    "kling-v2.6/motion_control": {
+      "billing_config": {
+        "duration_source": {
+          "kind": "response_body",
+          "path": "videos[0].url"
+        }
+      }
+    },
     "kling-v2.6/text_to_video": {
       "unit_price_cents": 40,
       "billing_config": {
@@ -79,6 +87,52 @@
           "pro": {
             "false": 20,
             "true": 40
+          }
+        }
+      }
+    },
+    "kling-v3-omni/image_to_video": {
+      "unit_price_cents": 120,
+      "billing_config": {
+        "keys": [
+          "output_resolution",
+          "enable_sound"
+        ],
+        "matrix": {
+          "720p": {
+            "false": 24,
+            "true": 32
+          },
+          "1080p": {
+            "false": 32,
+            "true": 40
+          },
+          "4k": {
+            "false": 119.5,
+            "true": 119.5
+          }
+        }
+      }
+    },
+    "kling-v3-omni/text_to_video": {
+      "unit_price_cents": 120,
+      "billing_config": {
+        "keys": [
+          "output_resolution",
+          "enable_sound"
+        ],
+        "matrix": {
+          "720p": {
+            "false": 24,
+            "true": 32
+          },
+          "1080p": {
+            "false": 32,
+            "true": 40
+          },
+          "4k": {
+            "false": 119.5,
+            "true": 119.5
           }
         }
       }

@@ -72,7 +72,7 @@ describe("kling stdio MCP server", () => {
 
     // A model offered on several endpoints must report every endpoint's price
     // without naming one, not silently price only the first endpoint found.
-    const multiEndpointModels: Record<string, string[]> = {"kling-v2.5-turbo-image-to-video-pro":["extend_video","image_to_video"],"kling-v2.5-turbo-text-to-video-pro":["extend_video","text_to_video"],"kling-v2.6":["image_to_video","text_to_video"],"kling-v3-omni":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
+    const multiEndpointModels: Record<string, string[]> = {"kling-v2.5-turbo-image-to-video-pro":["extend_video","image_to_video"],"kling-v2.5-turbo-text-to-video-pro":["extend_video","text_to_video"],"kling-v2.6":["image_to_video","motion_control","text_to_video"],"kling-v3-omni":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
     for (const [model, actions] of Object.entries(multiEndpointModels)) {
       const spread = await client.callTool({ name: "check_pricing", arguments: { model } });
       const spreadContent = spread.content?.[0];
