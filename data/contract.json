@@ -6,6 +6,7 @@
     "kling-v1-avatar-standard",
     "kling-v2.5-turbo-image-to-video-pro",
     "kling-v2.5-turbo-text-to-video-pro",
+    "kling-o1",
     "kling-v2.1-master-image-to-video",
     "kling-v2.1-pro",
     "kling-v2.1-standard",
@@ -198,6 +199,7 @@
       "endpoint": "image_to_video",
       "task_type": "asynchronous",
       "models": [
+        "kling-o1",
         "kling-v2.1-master-image-to-video",
         "kling-v2.1-pro",
         "kling-v2.1-standard",
@@ -209,11 +211,25 @@
       "rules": [
         {
           "when": {
+            "model": "kling-o1"
+          },
+          "forbidden": [
+            "output_resolution",
+            "negative_prompt",
+            "cfg_scale"
+          ]
+        },
+        {
+          "when": {
             "model": "kling-v2.1-master-image-to-video"
           },
           "forbidden": [
             "output_resolution",
-            "enable_sound"
+            "enable_sound",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -222,7 +238,11 @@
           },
           "forbidden": [
             "output_resolution",
-            "enable_sound"
+            "enable_sound",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -231,7 +251,11 @@
           },
           "forbidden": [
             "output_resolution",
-            "enable_sound"
+            "enable_sound",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -240,7 +264,11 @@
           },
           "forbidden": [
             "output_resolution",
-            "enable_sound"
+            "enable_sound",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -250,7 +278,11 @@
           "forbidden": [
             "output_resolution",
             "negative_prompt",
-            "cfg_scale"
+            "cfg_scale",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -259,7 +291,11 @@
           },
           "forbidden": [
             "negative_prompt",
-            "cfg_scale"
+            "cfg_scale",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -271,11 +307,102 @@
             "aspect_ratio",
             "negative_prompt",
             "cfg_scale",
-            "last_frame_image_url"
+            "last_frame_image_url",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         }
       ],
       "fields_by_model": {
+        "kling-o1": {
+          "model": {
+            "type": "string",
+            "required": true,
+            "description": "Model slug."
+          },
+          "prompt": {
+            "type": "string",
+            "max": 2500,
+            "min": 1,
+            "length": true,
+            "required": true,
+            "description": "Video description; reference media with matching numbered markers."
+          },
+          "first_frame_image_url": {
+            "type": "string",
+            "required": true,
+            "description": "Public HTTP(S) JPG, JPEG, or PNG first-frame image URL."
+          },
+          "callback_url": {
+            "type": "string",
+            "description": "Webhook URL for async notifications."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "std",
+              "pro"
+            ],
+            "default": "std",
+            "description": "Generation mode."
+          },
+          "enable_sound": {
+            "type": "boolean",
+            "default": false,
+            "description": "Sound generation must remain disabled."
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "enum": [
+              5
+            ],
+            "default": 5,
+            "description": "Duration in seconds."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "default": "16:9",
+            "description": "Output aspect ratio."
+          },
+          "last_frame_image_url": {
+            "type": "string",
+            "description": "Public HTTP(S) JPG, JPEG, or PNG final-frame image URL; cannot be combined with reference_image_urls or reference_video_url."
+          },
+          "reference_image_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "max_items": 7,
+            "min_items": 1,
+            "description": "Ordered public HTTP(S) JPG, JPEG, or PNG reference image URLs; cannot be combined with last_frame_image_url."
+          },
+          "reference_video_url": {
+            "type": "string",
+            "description": "Public HTTP(S) MP4 or MOV reference video URL; cannot be combined with last_frame_image_url."
+          },
+          "reference_video_type": {
+            "type": "string",
+            "enum": [
+              "base",
+              "feature"
+            ],
+            "default": "base",
+            "description": "Use the video as a base edit or feature reference."
+          },
+          "preserve_reference_video_audio": {
+            "type": "boolean",
+            "default": false,
+            "description": "Preserve the reference video's original audio."
+          }
+        },
         "kling-v2.1-master-image-to-video": {
           "model": {
             "type": "string",
@@ -766,6 +893,7 @@
       "task_type": "asynchronous",
       "models": [
         "kling-3.0",
+        "kling-o1",
         "kling-v2.1-master-text-to-video",
         "kling-v2.5-turbo-text-to-video-pro",
         "kling-v2.6",
@@ -775,15 +903,18 @@
       "rules": [
         {
           "when": {
-            "model": "kling-v2.5-turbo-text-to-video-pro"
+            "model": "kling-3.0"
           },
           "forbidden": [
-            "mode"
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
           "when": {
-            "model": "kling-v2.6"
+            "model": "kling-o1"
           },
           "forbidden": [
             "output_resolution",
@@ -798,6 +929,49 @@
         },
         {
           "when": {
+            "model": "kling-v2.1-master-text-to-video"
+          },
+          "forbidden": [
+            "mode",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
+          ]
+        },
+        {
+          "when": {
+            "model": "kling-v2.5-turbo-text-to-video-pro"
+          },
+          "forbidden": [
+            "mode",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
+          ]
+        },
+        {
+          "when": {
+            "model": "kling-v2.6"
+          },
+          "forbidden": [
+            "output_resolution",
+            "negative_prompt",
+            "cfg_scale",
+            "multi_shots",
+            "multi_prompt",
+            "first_frame_image_url",
+            "last_frame_image_url",
+            "kling_elements",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
+          ]
+        },
+        {
+          "when": {
             "model": "kling-v3-omni"
           },
           "forbidden": [
@@ -807,7 +981,11 @@
             "multi_prompt",
             "first_frame_image_url",
             "last_frame_image_url",
-            "kling_elements"
+            "kling_elements",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         },
         {
@@ -822,7 +1000,11 @@
             "multi_prompt",
             "first_frame_image_url",
             "last_frame_image_url",
-            "kling_elements"
+            "kling_elements",
+            "reference_image_urls",
+            "reference_video_url",
+            "reference_video_type",
+            "preserve_reference_video_audio"
           ]
         }
       ],
@@ -909,6 +1091,84 @@
           "kling_elements": {
             "type": "array",
             "description": "Element references with image, video, or audio materials."
+          }
+        },
+        "kling-o1": {
+          "model": {
+            "type": "string",
+            "required": true,
+            "description": "Model slug."
+          },
+          "prompt": {
+            "type": "string",
+            "max": 2500,
+            "min": 1,
+            "length": true,
+            "required": true,
+            "description": "Video description; reference media with matching numbered markers."
+          },
+          "callback_url": {
+            "type": "string",
+            "description": "Webhook URL for async notifications."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "std",
+              "pro"
+            ],
+            "default": "std",
+            "description": "Generation mode."
+          },
+          "enable_sound": {
+            "type": "boolean",
+            "default": false,
+            "description": "Sound generation must remain disabled."
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "enum": [
+              5
+            ],
+            "default": 5,
+            "description": "Duration in seconds."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "default": "16:9",
+            "description": "Output aspect ratio."
+          },
+          "reference_image_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "max_items": 7,
+            "min_items": 1,
+            "description": "Ordered public HTTP(S) JPG, JPEG, or PNG reference image URLs."
+          },
+          "reference_video_url": {
+            "type": "string",
+            "description": "Public HTTP(S) MP4 or MOV reference video URL."
+          },
+          "reference_video_type": {
+            "type": "string",
+            "enum": [
+              "base",
+              "feature"
+            ],
+            "default": "base",
+            "description": "Use the video as a base edit or feature reference."
+          },
+          "preserve_reference_video_audio": {
+            "type": "boolean",
+            "default": false,
+            "description": "Preserve the reference video's original audio."
           }
         },
         "kling-v2.1-master-text-to-video": {

@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.1.13](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.13) - 2026-07-28
+
+### Added
+- Expose Kling O1 on text-to-video and image-to-video tools with reference-media fields and cross-field validation.
+
+
 ## [v0.1.12](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.12) - 2026-07-23
 
 ### Added

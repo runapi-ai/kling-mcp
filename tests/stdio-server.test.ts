@@ -61,7 +61,7 @@ describe("kling stdio MCP server", () => {
 
     // Every advertised model must price without naming an endpoint, even one
     // that only lives on a non-primary endpoint of a multi-endpoint line.
-    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.5-turbo-image-to-video-pro","kling-v2.5-turbo-text-to-video-pro","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.6","kling-v3-omni","kling-v3-turbo-image-to-video","kling-3.0","kling-v2.1-master-text-to-video","kling-v3-turbo-text-to-video"]) {
+    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.5-turbo-image-to-video-pro","kling-v2.5-turbo-text-to-video-pro","kling-o1","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.6","kling-v3-omni","kling-v3-turbo-image-to-video","kling-3.0","kling-v2.1-master-text-to-video","kling-v3-turbo-text-to-video"]) {
       const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
       const pricedContent = priced.content?.[0];
       if (!pricedContent || pricedContent.type !== "text") {
@@ -72,7 +72,7 @@ describe("kling stdio MCP server", () => {
 
     // A model offered on several endpoints must report every endpoint's price
     // without naming one, not silently price only the first endpoint found.
-    const multiEndpointModels: Record<string, string[]> = {"kling-v2.5-turbo-image-to-video-pro":["extend_video","image_to_video"],"kling-v2.5-turbo-text-to-video-pro":["extend_video","text_to_video"],"kling-v2.6":["image_to_video","motion_control","text_to_video"],"kling-v3-omni":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
+    const multiEndpointModels: Record<string, string[]> = {"kling-v2.5-turbo-image-to-video-pro":["extend_video","image_to_video"],"kling-v2.5-turbo-text-to-video-pro":["extend_video","text_to_video"],"kling-o1":["image_to_video","text_to_video"],"kling-v2.6":["image_to_video","motion_control","text_to_video"],"kling-v3-omni":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
     for (const [model, actions] of Object.entries(multiEndpointModels)) {
       const spread = await client.callTool({ name: "check_pricing", arguments: { model } });
       const spreadContent = spread.content?.[0];
@@ -107,6 +107,106 @@ describe("kling stdio MCP server", () => {
             }
           ];
           for (const invalid of invalidV26Requests) {
+            const response = await client.callTool({ name: invalid.tool, arguments: invalid.arguments });
+            const responseContent = response.content?.[0];
+            if (!responseContent || responseContent.type !== "text") {
+              throw new Error("Expected text tool response");
+            }
+            expect(JSON.parse(responseContent.text).error).toContain(invalid.message);
+          }
+          const invalidO1Requests = [
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<image_1>>>",
+                reference_image_urls: ["file:///etc/passwd.jpg"], wait: false
+              },
+              message: "reference_image_urls[0] must be a public HTTP or HTTPS URL"
+            },
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<image_1>>>",
+                reference_image_urls: ["http://localhost/reference.jpg"], wait: false
+              },
+              message: "reference_image_urls[0] must be a public HTTP or HTTPS URL"
+            },
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<image_1>>>",
+                reference_image_urls: ["http://127.0.0.1/reference.jpg"], wait: false
+              },
+              message: "reference_image_urls[0] must be a public HTTP or HTTPS URL"
+            },
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<image_1>>>",
+                reference_image_urls: ["http://169.254.169.254/reference.jpg"], wait: false
+              },
+              message: "reference_image_urls[0] must be a public HTTP or HTTPS URL"
+            },
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<image_1>>>",
+                reference_image_urls: ["http://[::ffff:127.0.0.1]/reference.jpg"], wait: false
+              },
+              message: "reference_image_urls[0] must be a public HTTP or HTTPS URL"
+            },
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use the subject",
+                reference_image_urls: ["https://cdn.runapi.ai/public/samples/image.jpg"], wait: false
+              },
+              message: "prompt must reference reference_image_urls[0] as <<<image_1>>>"
+            },
+            {
+              tool: "text_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<image_1>>> then <<<image_2>>>",
+                reference_image_urls: ["https://cdn.runapi.ai/public/samples/image.jpg"], wait: false
+              },
+              message: "prompt references missing image_2"
+            },
+            {
+              tool: "text_to_video",
+              arguments: { model: "kling-o1", prompt: "Use <<<video_2>>>", wait: false },
+              message: "prompt references missing video_2"
+            },
+            {
+              tool: "text_to_video",
+              arguments: { model: "kling-o1", prompt: "Use the motion", reference_video_type: "feature", wait: false },
+              message: "reference_video_type requires reference_video_url"
+            },
+            {
+              tool: "image_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Use <<<video_1>>>",
+                first_frame_image_url: "https://cdn.runapi.ai/public/samples/image.jpg",
+                reference_video_url: "https://cdn.runapi.ai/public/samples/video.mp4", wait: false
+              },
+              message: "reference_video_type base cannot be combined with first_frame_image_url or last_frame_image_url"
+            },
+            {
+              tool: "image_to_video",
+              arguments: {
+                model: "kling-o1", prompt: "Move toward <<<image_1>>>",
+                first_frame_image_url: "https://cdn.runapi.ai/public/samples/image.jpg",
+                last_frame_image_url: "https://cdn.runapi.ai/public/samples/last-frame.jpg",
+                reference_image_urls: ["https://cdn.runapi.ai/public/samples/portrait.jpg"], wait: false
+              },
+              message: "last_frame_image_url cannot be combined with reference_image_urls or reference_video_url"
+            },
+            {
+              tool: "text_to_video",
+              arguments: { model: "kling-o1", prompt: "Test", enable_sound: true, wait: false },
+              message: "enable_sound is not supported by kling-o1"
+            }
+          ];
+          for (const invalid of invalidO1Requests) {
             const response = await client.callTool({ name: invalid.tool, arguments: invalid.arguments });
             const responseContent = response.content?.[0];
             if (!responseContent || responseContent.type !== "text") {

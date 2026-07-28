@@ -38,6 +38,26 @@
     "kling-v2.5-turbo-text-to-video-pro/text_to_video": {
       "unit_price_cents": 9
     },
+    "kling-o1/image_to_video": {
+      "unit_price_cents": 10,
+      "billing_config": {
+        "key": "mode",
+        "overrides": {
+          "std": 7.5,
+          "pro": 10
+        }
+      }
+    },
+    "kling-o1/text_to_video": {
+      "unit_price_cents": 10,
+      "billing_config": {
+        "key": "mode",
+        "overrides": {
+          "std": 7.5,
+          "pro": 10
+        }
+      }
+    },
     "kling-v2.1-master-image-to-video/image_to_video": {
       "unit_price_cents": 32
     },
