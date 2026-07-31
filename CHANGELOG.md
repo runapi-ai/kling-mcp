@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.1.14](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.14) - 2026-07-31
+
+### Changed
+- Resolve MCP prices from the RunAPI Price Schedule API instead of embedded package data.
+
+
 ## [v0.1.13](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.13) - 2026-07-28
 
 ### Added

@@ -74,13 +74,13 @@ Ready-made examples are in [`examples/`](examples/) for Claude, Cursor, Windsurf
 
 | Tool | Auth | Purpose |
 |---|---|---|
-| `ai_avatar` | Yes | Create a Kling ai avatar task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
-| `extend_video` | Yes | Create a Kling extend video task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
-| `image_to_video` | Yes | Create a Kling image to video task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
-| `motion_control` | Yes | Create a Kling motion control task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
-| `text_to_video` | Yes | Create a Kling text to video task and optionally wait for a terminal status. Returns the task id, status, output URLs, and pricing snapshot. |
+| `ai_avatar` | Yes | Create a Kling ai avatar task and optionally wait for a terminal status. Returns the task id, status, and output URLs. |
+| `extend_video` | Yes | Create a Kling extend video task and optionally wait for a terminal status. Returns the task id, status, and output URLs. |
+| `image_to_video` | Yes | Create a Kling image to video task and optionally wait for a terminal status. Returns the task id, status, and output URLs. |
+| `motion_control` | Yes | Create a Kling motion control task and optionally wait for a terminal status. Returns the task id, status, and output URLs. |
+| `text_to_video` | Yes | Create a Kling text to video task and optionally wait for a terminal status. Returns the task id, status, and output URLs. |
 | `get_task` | Yes | Fetch the current status and latest payload for an existing task. |
-| `check_pricing` | No | Look up the current pricing snapshot for a Kling model and endpoint. |
+| `check_pricing` | No | Look up current pricing for a Kling model and endpoint. |
 
 ---
 

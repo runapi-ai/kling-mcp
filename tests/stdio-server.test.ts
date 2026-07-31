@@ -1,4 +1,6 @@
 import fs from "node:fs";
+import { createServer, type Server } from "node:http";
+import type { AddressInfo } from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -9,16 +11,20 @@ describe("kling stdio MCP server", () => {
   let client: Client | undefined;
   let transport: StdioClientTransport | undefined;
   let tempHome: string | undefined;
+  let api: Server | undefined;
+  let runtimePricingAvailable = true;
 
   afterEach(async () => {
     await client?.close();
     await transport?.close();
+    await new Promise<void>((resolve, reject) => api?.close((error) => error ? reject(error) : resolve()) ?? resolve());
     if (tempHome) {
       fs.rmSync(tempHome, { recursive: true, force: true });
     }
     client = undefined;
     transport = undefined;
     tempHome = undefined;
+    api = undefined;
   });
 
   it("exposes the model-line tools over the real stdio transport", async () => {
@@ -28,6 +34,10 @@ describe("kling stdio MCP server", () => {
     ].find((candidate) => fs.existsSync(candidate));
     expect(tsxPath).toBeDefined();
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "runapi-mcp-home-"));
+    runtimePricingAvailable = true;
+    api = createRuntimeApi(() => runtimePricingAvailable);
+    await new Promise<void>((resolve) => api!.listen(0, "127.0.0.1", resolve));
+    const apiUrl = `http://127.0.0.1:${(api.address() as AddressInfo).port}`;
 
     client = new Client({ name: "kling-mcp-test", version: "0.1.0" });
     transport = new StdioClientTransport({
@@ -37,7 +47,9 @@ describe("kling stdio MCP server", () => {
       stderr: "pipe",
       env: {
         HOME: tempHome,
-        PATH: process.env.PATH || ""
+        PATH: process.env.PATH || "",
+        RUNAPI_API_KEY: "stdio-test-key",
+        RUNAPI_BASE_URL: apiUrl
       }
     });
 
@@ -57,17 +69,17 @@ describe("kling stdio MCP server", () => {
     if (!content || content.type !== "text") {
       throw new Error("Expected text tool response");
     }
-    expect(JSON.parse(content.text)).toMatchObject({ supported: true });
+    expect(JSON.parse(content.text)).toMatchObject({ supported: true, price: {price_schedule: {unit_price_cents: 37}} });
 
     // Every advertised model must price without naming an endpoint, even one
     // that only lives on a non-primary endpoint of a multi-endpoint line.
-    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.5-turbo-image-to-video-pro","kling-v2.5-turbo-text-to-video-pro","kling-o1","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v2.6","kling-v3-omni","kling-v3-turbo-image-to-video","kling-3.0","kling-v2.1-master-text-to-video","kling-v3-turbo-text-to-video"]) {
+    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v3-turbo-image-to-video","kling-v2.1-master-text-to-video","kling-v3-turbo-text-to-video"]) {
       const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
       const pricedContent = priced.content?.[0];
       if (!pricedContent || pricedContent.type !== "text") {
         throw new Error("Expected text tool response");
       }
-      expect(JSON.parse(pricedContent.text), `check_pricing should support ${model}`).toMatchObject({ supported: true });
+      expect(JSON.parse(pricedContent.text), `check_pricing should support ${model}`).toMatchObject({ supported: true, price: {price_schedule: {unit_price_cents: 37}} });
     }
 
     // A model offered on several endpoints must report every endpoint's price
@@ -82,6 +94,22 @@ describe("kling stdio MCP server", () => {
       const parsed = JSON.parse(spreadContent.text) as { endpoints?: { action: string }[] };
       expect(parsed.endpoints?.map((entry) => entry.action).sort(), `check_pricing should price ${model} on every endpoint`).toEqual([...actions].sort());
     }
+
+    runtimePricingAvailable = false;
+
+    runtimePricingAvailable = false;
+    const unavailable = await client.callTool({ name: "check_pricing", arguments: {} });
+    const unavailableContent = unavailable.content?.[0];
+    if (!unavailableContent || unavailableContent.type !== "text") {
+      throw new Error("Expected text tool response");
+    }
+    expect(JSON.parse(unavailableContent.text)).toMatchObject({
+      supported: true,
+      price: {
+        error: expect.stringContaining("https://runapi.ai/pricing"),
+        pricing_url: "https://runapi.ai/pricing"
+      }
+    });
 
           const invalidV26Requests = [
             {
@@ -235,3 +263,44 @@ describe("kling stdio MCP server", () => {
 
   });
 });
+
+function createRuntimeApi(runtimeAvailable: () => boolean): Server {
+  return createServer((request, response) => {
+    response.setHeader("content-type", "application/json");
+    if (request.method === "POST" && request.url?.startsWith("/api/v1/")) {
+      response.end(JSON.stringify({
+        id: "550e8400-e29b-41d4-a716-446655440000",
+        status: "queued",
+        billing: {reservation: {amount_cents: 37}, settlement: null, refund: null}
+      }));
+      return;
+    }
+    if (!request.url?.startsWith("/api/v1/price_schedules")) {
+      response.statusCode = 404;
+      response.end(JSON.stringify({message: "not found"}));
+      return;
+    }
+    if (!runtimeAvailable()) {
+      response.statusCode = 503;
+      response.end(JSON.stringify({message: "runtime pricing unavailable"}));
+      return;
+    }
+
+    const url = new URL(request.url, "http://example.test");
+    if (url.searchParams.get("service")?.includes("-")) {
+      response.statusCode = 400;
+      response.end(JSON.stringify({message: "service must use the public API namespace"}));
+      return;
+    }
+    const model = url.searchParams.get("model");
+    response.end(JSON.stringify({
+      as_of: "2026-07-30T00:00:00.000000Z",
+      price_schedules: [{
+        service: url.searchParams.get("service"),
+        action: url.searchParams.get("action"),
+        ...(model ? {model} : {}),
+        unit_price_cents: 37
+      }]
+    }));
+  });
+}

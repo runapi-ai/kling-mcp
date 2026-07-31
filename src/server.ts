@@ -2,13 +2,15 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   createModelServer,
+  CANONICAL_PRICING_URL,
   declaredFieldsForAction,
   findModelForAction,
   findModels,
   friendlyError,
   jsonText,
-  priceForModel,
+  lookupRuntimePrice,
   RunApiClient,
+  runtimePricingErrorMessage,
   taskStatus,
   validateInputRules,
   validateParams,
@@ -16,10 +18,10 @@ import {
   type Contract,
   type ContractAction,
   type InputRule,
+  type ModelInfo,
   type ModelServerTool,
-  type PricingConfig
 } from "@runapi.ai/mcp-core";
-import { readContract, readPricing } from "./data.js";
+import { readContract } from "./data.js";
 import { META } from "./meta.js";
 
 type RuntimeContractAction = ContractAction & {
@@ -318,7 +320,22 @@ function buildTools(contract: Contract): { tools: ModelServerTool[]; inputRules:
   return { tools, inputRules };
 }
 
-function registerSynchronousTools(server: McpServer, contract: Contract, pricing: PricingConfig, client: RunApiClient): void {
+async function runtimePricingFor(info: ModelInfo, client: RunApiClient) {
+  try {
+    return await lookupRuntimePrice(client, {
+      service: info.service,
+      action: info.action,
+      model: info.model
+    });
+  } catch (error) {
+    return {
+      error: runtimePricingErrorMessage(error),
+      pricing_url: CANONICAL_PRICING_URL
+    };
+  }
+}
+
+function registerSynchronousTools(server: McpServer, contract: Contract, client: RunApiClient): void {
   for (const [key, action] of Object.entries(contract.actions)) {
     if (taskType(action) !== "synchronous") {
       continue;
@@ -333,7 +350,7 @@ function registerSynchronousTools(server: McpServer, contract: Contract, pricing
 
     server.tool(
       endpoint,
-      `Run a synchronous ${action.model} operation on RunAPI (${endpoint.replace(/_/g, " ")}). Returns the operation result and pricing snapshot.`,
+      `Run a synchronous ${action.model} operation on RunAPI (${endpoint.replace(/_/g, " ")}). Returns the operation result.`,
       shape,
       async (args) => {
         const { model, ...params } = args as Record<string, unknown> & { model?: string };
@@ -359,7 +376,7 @@ function registerSynchronousTools(server: McpServer, contract: Contract, pricing
           }
 
           const result = await client.createTask(service, endpoint, body);
-          return jsonText({ result, price: priceForModel(info, pricing) });
+          return jsonText({ result });
         } catch (error) {
           return jsonText({ error: friendlyError(error) });
         }
@@ -368,7 +385,7 @@ function registerSynchronousTools(server: McpServer, contract: Contract, pricing
   }
 }
 
-function registerLineTools(server: McpServer, contract: Contract, pricing: PricingConfig, client: RunApiClient): void {
+function registerLineTools(server: McpServer, contract: Contract, client: RunApiClient): void {
   const service = lineService(contract);
   const endpoints = lineEndpoints(contract);
   const asynchronousEndpoints = lineEndpoints(contract, "asynchronous");
@@ -416,7 +433,7 @@ function registerLineTools(server: McpServer, contract: Contract, pricing: Prici
       if (action) {
         const info = findModelForAction(service, action, model, contract);
         return info
-          ? jsonText({ supported: true, model: info.model, service: info.service, action: info.action, price: priceForModel(info, pricing) })
+          ? jsonText({ supported: true, model: info.model, service: info.service, action: info.action, price: await runtimePricingFor(info, client) })
           : jsonText(noMatch);
       }
 
@@ -424,7 +441,7 @@ function registerLineTools(server: McpServer, contract: Contract, pricing: Prici
       if (!model) {
         const info = findModelForAction(service, endpoints[0], undefined, contract);
         return info
-          ? jsonText({ supported: true, model: info.model, service: info.service, action: info.action, price: priceForModel(info, pricing) })
+          ? jsonText({ supported: true, model: info.model, service: info.service, action: info.action, price: await runtimePricingFor(info, client) })
           : jsonText(noMatch);
       }
 
@@ -437,13 +454,13 @@ function registerLineTools(server: McpServer, contract: Contract, pricing: Prici
       }
       if (matches.length === 1) {
         const info = matches[0];
-        return jsonText({ supported: true, model: info.model, service: info.service, action: info.action, price: priceForModel(info, pricing) });
+        return jsonText({ supported: true, model: info.model, service: info.service, action: info.action, price: await runtimePricingFor(info, client) });
       }
       return jsonText({
         supported: true,
         model: matches[0].model,
         service: matches[0].service,
-        endpoints: matches.map((info) => ({ action: info.action, price: priceForModel(info, pricing) }))
+        endpoints: await Promise.all(matches.map(async (info) => ({ action: info.action, price: await runtimePricingFor(info, client) })))
       });
     }
   );
@@ -451,7 +468,6 @@ function registerLineTools(server: McpServer, contract: Contract, pricing: Prici
 
 export function createServer(): McpServer {
   const contract = readContract();
-  const pricing = readPricing();
   const { tools, inputRules } = buildTools(contract);
   const client = new KlingRunApiClient();
 
@@ -460,13 +476,12 @@ export function createServer(): McpServer {
     version: META.version,
     lineSlug: META.lineSlug,
     contract,
-    pricing,
     inputRules,
     tools,
     client
   });
 
-  registerSynchronousTools(server, contract, pricing, client);
-  registerLineTools(server, contract, pricing, client);
+  registerSynchronousTools(server, contract, client);
+  registerLineTools(server, contract, client);
   return server;
 }
