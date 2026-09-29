@@ -57,7 +57,7 @@ describe("kling stdio MCP server", () => {
 
     const tools = await client.listTools();
     const names = tools.tools.map((tool) => tool.name).sort();
-    expect(names).toEqual(["ai_avatar","check_pricing","extend_video","get_task","image_to_video","login","motion_control","text_to_video"]);
+    expect(names).toEqual(["ai_avatar","check_pricing","edit_video","extend_video","get_task","image_to_video","login","motion_control","text_to_video"]);
 
     for (const endpoint of []) {
       const tool = tools.tools.find((candidate) => candidate.name === endpoint);
@@ -73,7 +73,7 @@ describe("kling stdio MCP server", () => {
 
     // Every advertised model must price without naming an endpoint, even one
     // that only lives on a non-primary endpoint of a multi-endpoint line.
-    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v3-turbo-image-to-video","kling-v2.1-master-text-to-video","kling-v3-turbo-text-to-video"]) {
+    for (const model of ["kling-ai-avatar-pro","kling-ai-avatar-standard","kling-ai-avatar-v1-pro","kling-v1-avatar-standard","kling-v3-omni-edit","kling-v2.1-master-image-to-video","kling-v2.1-pro","kling-v2.1-standard","kling-v3-turbo-image-to-video","kling-v2.1-master-text-to-video","kling-v3-turbo-text-to-video"]) {
       const priced = await client.callTool({ name: "check_pricing", arguments: { model } });
       const pricedContent = priced.content?.[0];
       if (!pricedContent || pricedContent.type !== "text") {
@@ -84,7 +84,7 @@ describe("kling stdio MCP server", () => {
 
     // A model offered on several endpoints must report every endpoint's price
     // without naming one, not silently price only the first endpoint found.
-    const multiEndpointModels: Record<string, string[]> = {"kling-v2.5-turbo-image-to-video-pro":["extend_video","image_to_video"],"kling-v2.5-turbo-text-to-video-pro":["extend_video","text_to_video"],"kling-o1":["image_to_video","text_to_video"],"kling-v2.6":["image_to_video","motion_control","text_to_video"],"kling-v3-omni":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
+    const multiEndpointModels: Record<string, string[]> = {"kling-v3-omni-reference":["edit_video","text_to_video"],"kling-v2.5-turbo-image-to-video-pro":["extend_video","image_to_video"],"kling-v2.5-turbo-text-to-video-pro":["extend_video","text_to_video"],"kling-o1":["image_to_video","text_to_video"],"kling-v2.6":["image_to_video","motion_control","text_to_video"],"kling-v3-omni":["image_to_video","text_to_video"],"kling-3.0":["motion_control","text_to_video"]};
     for (const [model, actions] of Object.entries(multiEndpointModels)) {
       const spread = await client.callTool({ name: "check_pricing", arguments: { model } });
       const spreadContent = spread.content?.[0];
@@ -115,7 +115,15 @@ describe("kling stdio MCP server", () => {
             {
               tool: "text_to_video",
               arguments: { model: "kling-v2.6", prompt: "test", enable_sound: true, wait: false },
-              message: "enable_sound requires mode pro for kling-v2.6"
+              message: "mode is absent, model=kling-v2.6 requires enable_sound to be one of false."
+            },
+            {
+              tool: "image_to_video",
+              arguments: {
+                model: "kling-v2.6", prompt: "test", first_frame_image_url: "https://cdn.runapi.ai/public/samples/image.jpg",
+                mode: "std", enable_sound: true, wait: false
+              },
+              message: "mode=std, model=kling-v2.6 requires enable_sound to be one of false."
             },
             {
               tool: "image_to_video",

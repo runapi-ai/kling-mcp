@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.2.0](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.2.0) - 2026-09-29
+
+### Added
+- Add the edit_video tool for kling-v3-omni-edit and kling-v3-omni-reference, and accept kling-v3-omni-reference on text_to_video.
+
+### Changed
+- Reject enable_sound without pro mode for kling-v2.6 through the embedded contract input rules instead of a hand-written check, and refresh the embedded contract with the current required fields, rules, and server defaults.
+  Migration: Set mode to pro when enabling sound on kling-v2.6.
+- Depend on @runapi.ai/mcp-core 0.4.5.
+
+
 ## [v0.1.14](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.1.14) - 2026-07-31
 
 ### Changed
