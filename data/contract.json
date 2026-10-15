@@ -2,8 +2,6 @@
   "catalog_models": [
     "kling-ai-avatar-pro",
     "kling-ai-avatar-standard",
-    "kling-ai-avatar-v1-pro",
-    "kling-v1-avatar-standard",
     "kling-v3-omni-edit",
     "kling-v3-omni-reference",
     "kling-v2.5-turbo-image-to-video-pro",
@@ -26,9 +24,7 @@
       "task_type": "asynchronous",
       "models": [
         "kling-ai-avatar-pro",
-        "kling-ai-avatar-standard",
-        "kling-ai-avatar-v1-pro",
-        "kling-v1-avatar-standard"
+        "kling-ai-avatar-standard"
       ],
       "fields_by_model": {
         "kling-ai-avatar-pro": {
@@ -58,58 +54,6 @@
           }
         },
         "kling-ai-avatar-standard": {
-          "model": {
-            "type": "string",
-            "required": true,
-            "description": "Model slug."
-          },
-          "source_image_url": {
-            "type": "string",
-            "required": true,
-            "description": "Face image URL."
-          },
-          "source_audio_url": {
-            "type": "string",
-            "required": true,
-            "description": "Audio URL for lip sync."
-          },
-          "prompt": {
-            "type": "string",
-            "required": true,
-            "description": "Description of the avatar."
-          },
-          "callback_url": {
-            "type": "string",
-            "description": "Webhook URL for async notifications."
-          }
-        },
-        "kling-ai-avatar-v1-pro": {
-          "model": {
-            "type": "string",
-            "required": true,
-            "description": "Model slug."
-          },
-          "source_image_url": {
-            "type": "string",
-            "required": true,
-            "description": "Face image URL."
-          },
-          "source_audio_url": {
-            "type": "string",
-            "required": true,
-            "description": "Audio URL for lip sync."
-          },
-          "prompt": {
-            "type": "string",
-            "required": true,
-            "description": "Description of the avatar."
-          },
-          "callback_url": {
-            "type": "string",
-            "description": "Webhook URL for async notifications."
-          }
-        },
-        "kling-v1-avatar-standard": {
           "model": {
             "type": "string",
             "required": true,
@@ -890,14 +834,6 @@
             ],
             "description": "Character orientation."
           },
-          "background_source": {
-            "type": "string",
-            "enum": [
-              "video",
-              "image"
-            ],
-            "description": "Background source."
-          },
           "callback_url": {
             "type": "string",
             "description": "Webhook URL for async notifications."
@@ -973,7 +909,7 @@
           },
           "prompt": {
             "type": "string",
-            "description": "Video description. Required unless multi_shots is enabled."
+            "description": "Video description. Required for single-shot and automatic storyboarding."
           },
           "callback_url": {
             "type": "string",
@@ -1011,6 +947,7 @@
               "9:16",
               "1:1"
             ],
+            "default": "16:9",
             "description": "Output aspect ratio."
           },
           "output_resolution": {
@@ -1035,9 +972,17 @@
             "type": "boolean",
             "description": "Enable multi-shot generation."
           },
+          "shot_type": {
+            "type": "string",
+            "enum": [
+              "custom",
+              "automatic"
+            ],
+            "description": "Multi-shot storyboard method: custom or automatic; defaults to custom only when multi_shots is true."
+          },
           "multi_prompt": {
             "type": "array",
-            "description": "Prompt segments for multi-shot mode."
+            "description": "Required for custom multi-shot mode: 1–6 shots with nonempty prompts up to 500 characters (each @element reference counts as 37), each duration_seconds 1–12, summing to duration_seconds."
           },
           "first_frame_image_url": {
             "type": "string",
@@ -1164,6 +1109,7 @@
               "9:16",
               "1:1"
             ],
+            "default": "16:9",
             "description": "Output aspect ratio."
           },
           "negative_prompt": {
@@ -1209,6 +1155,7 @@
               "9:16",
               "1:1"
             ],
+            "default": "16:9",
             "description": "Output aspect ratio."
           },
           "negative_prompt": {
@@ -1469,6 +1416,21 @@
           }
         }
       }
+    }
+  },
+  "retired_models": {
+    "kling": {
+      "provider": "Kuaishou",
+      "versions": [
+        {
+          "id": "kling-ai-avatar-v1-pro",
+          "retired_at": "2026-10-14T00:00:00Z"
+        },
+        {
+          "id": "kling-v1-avatar-standard",
+          "retired_at": "2026-10-14T00:00:00Z"
+        }
+      ]
     }
   }
 }

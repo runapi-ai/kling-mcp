@@ -1,5 +1,24 @@
 # Changelog
 
+## [v0.4.0](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.4.0) - 2026-10-15
+
+### Added
+- Add custom and automatic shot_type storyboarding with optional sound and custom shot duration constraints.
+
+### Changed
+- Declare the 16:9 server default for aspect_ratio on kling-3.0, kling-v2.5-turbo-text-to-video-pro and kling-v2.1-master-text-to-video text_to_video.
+
+### Removed
+- Remove retired model choices from creation metadata and document historical task lookup.
+  Migration: Retired models return HTTP 410 for new requests. Query existing task IDs with the original task endpoint; no automatic replacement is applied.
+- Remove the background_source motion-control parameter, which the API no longer accepts.
+  Migration: Drop background_source from motion-control requests.
+
+### Fixed
+- Use explicit retirement metadata to exclude retired media models from discovery and creation recommendations.
+  Migration: Query existing tasks with get_task. Retirement replacements are informational and do not remap model IDs.
+
+
 ## [v0.3.0](https://github.com/runapi-ai/kling-mcp/releases/tag/v0.3.0) - 2026-09-30
 
 ### Changed
